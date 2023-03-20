@@ -3,7 +3,7 @@ import _thread as thread
 import sys
 
 
-def sip(conn):
+def sip(conn, a):
     count = 0
 
     while True:
@@ -11,13 +11,16 @@ def sip(conn):
         if (mld == "lolxd"):
             break
         count = count + 1
-
-    print(count)
+    count = count/1_000_000
+    rate = count/30
+    print("ID\tInterval\tReceived\tRate")
+    print(a[0], ":", a[1], "\t0.0-30.0\t", int(count),
+          "MB\t", "%.2f" % rate, "Mbps")
     conn.close()
 
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
-serverPort = 12000
+serverPort = 8081
 server_ip = "127.0.0.1"
 
 try:
@@ -28,12 +31,13 @@ except:
 
 serverSocket.listen(10)
 
-print("---------------------------------------------\nA simpleperf server is listening on port XXXX\n---------------------------------------------")
+print("---------------------------------------------\nA simpleperf server is listening on port",
+      serverPort, "\n---------------------------------------------")
 
 while True:
     connectionSocket, addr = serverSocket.accept()
-    print("A simpleperf client with <", addr, ": ", addr,
-          " > is connected with < 127.0.0.1 : 12000 >")
+    print("A simpleperf client with <",
+          addr[0], ":", addr[1], "> is connected with <", server_ip, ":", serverPort, ">")
     thread.start_new_thread(sip, (connectionSocket, addr))
 
 serverSocket.close()
